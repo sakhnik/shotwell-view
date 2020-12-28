@@ -36,6 +36,6 @@ with sqlite3.connect(PHOTO_DB) as conn:
             events[eid] = dir_path
             pathlib.Path(dir_path).mkdir(parents=True, exist_ok=True)
         try:
-            os.symlink(fname, f"{dir_path}/{dt.strftime('%H:%M:%S')}_{os.path.basename(fname)}")
+            os.symlink(fname, f"{dir_path}/{timestamp}_{os.path.basename(fname)}")
         except Exception as e:
             print(e)
