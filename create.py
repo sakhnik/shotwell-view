@@ -30,12 +30,12 @@ with sqlite3.connect(PHOTO_DB) as conn:
         if not dir_path:
             dt = datetime.fromtimestamp(timestamp)
             if ename:
-                dir_path = f"{ROOT}/{dt.year}/{dt.month:02d}/{dt.day:02d} {ename}"
+                dir_path = f"{ROOT}/{dt.year}/{dt.year}-{dt.month:02d}-{dt.day:02d} {ename}"
             else:
-                dir_path = f"{ROOT}/{dt.year}/{dt.month:02d}/{dt.day:02d}"
+                dir_path = f"{ROOT}/{dt.year}/{dt.year}-{dt.month:02d}-{dt.day:02d}"
             events[eid] = dir_path
             pathlib.Path(dir_path).mkdir(parents=True, exist_ok=True)
         try:
-            os.symlink(fname, f"{dir_path}/{os.path.basename(fname)}")
+            os.symlink(fname, f"{dir_path}/{dt.strftime('%H:%M:%S')}_{os.path.basename(fname)}")
         except Exception as e:
             print(e)
