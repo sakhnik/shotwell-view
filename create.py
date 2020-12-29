@@ -6,6 +6,7 @@ import sqlite3
 from datetime import datetime
 import pathlib
 import os
+import shutil
 
 
 QUERY = """
@@ -19,6 +20,9 @@ ORDER BY f.exposure_time;
 
 PHOTO_DB = "/home/sakhnik/Pictures/shotwell/data/photo.db"
 ROOT = "/home/sakhnik/Pictures2"
+
+# Remove the old view
+shutil.rmtree(ROOT)
 
 events = {}  # eid -> path
 
