@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 
-"""."""
+"""Create picture hierarchy based on the information from Shotwell.
+
+Symlinks to the actual files will be put into the directories that
+correspond to the descriptive events. The photo/video collection
+will be suitable for browsing and viewing with PiGallery2
+(https://github.com/bpatrik/PiGallery2).
+"""
 
 import sqlite3
 from datetime import datetime
