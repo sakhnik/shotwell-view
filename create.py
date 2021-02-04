@@ -49,3 +49,5 @@ with sqlite3.connect(PHOTO_DB) as conn:
             os.symlink(fname, f"{dir_path}/{timestamp}_{os.path.basename(fname)}")
         except Exception as e:
             print(e)
+
+os.symlink("/home/sakhnik/Pictures-incoming", f"{ROOT}/incoming")
