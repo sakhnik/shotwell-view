@@ -24,7 +24,7 @@ JOIN EventTable e ON f.event_id = e.id
 ORDER BY f.exposure_time;
 """
 
-PHOTO_DB = "/home/sakhnik/Pictures/shotwell/data/photo.db"
+PHOTO_DB = "/mnt/pictures/shotwell/data/photo.db"
 ROOT = "/home/sakhnik/Pictures2"
 
 # Remove the old view
