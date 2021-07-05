@@ -28,7 +28,12 @@ PHOTO_DB = "/mnt/pictures/shotwell/data/photo.db"
 ROOT = "/home/sakhnik/Pictures2"
 
 # Remove the old view
-shutil.rmtree(ROOT)
+for f in os.listdir(ROOT):
+    fpath = pathlib.Path(ROOT, f)
+    if os.path.islink(fpath):
+        os.unlink(fpath)
+    else:
+        shutil.rmtree(fpath)
 
 events = {}  # eid -> path
 
@@ -50,4 +55,7 @@ with sqlite3.connect(PHOTO_DB) as conn:
         except Exception as e:
             print(e)
 
-os.symlink("/home/sakhnik/Pictures-incoming", f"{ROOT}/incoming")
+try:
+    os.symlink("/home/sakhnik/Pictures-incoming", f"{ROOT}/incoming")
+except Exception as e:
+    print(e)
