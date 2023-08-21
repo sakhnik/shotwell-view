@@ -51,7 +51,12 @@ with sqlite3.connect(PHOTO_DB) as conn:
             events[eid] = dir_path
             pathlib.Path(dir_path).mkdir(parents=True, exist_ok=True)
         try:
-            os.symlink(fname, f"{dir_path}/{timestamp}_{os.path.basename(fname)}")
+            lname = f"{dir_path}/{timestamp}_{os.path.basename(fname)}"
+            os.symlink(fname, lname)
+            # Mark the original timestamp from the database for correct
+            # temporal ordering
+            os.utime(fname, (timestamp, timestamp), follow_symlinks=False)
+            os.utime(lname, (timestamp, timestamp), follow_symlinks=False)
         except Exception as e:
             print(e)
 
