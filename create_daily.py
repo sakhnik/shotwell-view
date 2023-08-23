@@ -31,7 +31,7 @@ def write_year(year, conn, fout):
 
     # Query photos for the target date
     query = """
-        SELECT f.filename, f.exposure_time, e.id FROM PhotoTable f
+        SELECT f.filename, f.exposure_time, e.id, e.name FROM PhotoTable f
         JOIN EventTable e ON f.event_id = e.id
         WHERE f.exposure_time >= ? AND f.exposure_time <= ?
         ORDER BY RANDOM()
@@ -40,15 +40,16 @@ def write_year(year, conn, fout):
     cursor = conn.cursor()
     cursor.execute(query, (start_timestamp, end_timestamp))
     photos = cursor.fetchall()
-    for fname, timestamp, eid in photos:
+    for fname, timestamp, eid, ename in photos:
         event_dir = events.get_name(eid)
         event_url = urllib.parse.quote(event_dir)
+        event_url_noslash = urllib.parse.quote(event_dir, safe='')
         lname = common.get_lname(timestamp, fname)
         lname_url = urllib.parse.quote(lname)
         pic_url = f"{event_url}/{lname_url}"
         img_path = f"/pgapi/gallery/content/{pic_url}/thumbnail/240"
-        link_url = f"/gallery/{event_url}?p={lname_url}"
-        img = f"[![{lname}]({img_path})]({link_url})"
+        link_url = f"/gallery/{event_url_noslash}?p={lname_url}"
+        img = f"[![{ename}]({img_path})]({link_url})"
         fout.write(f"{img}\n")
     fout.write("\n")
 
