@@ -11,7 +11,10 @@ import urllib.parse
 now = datetime.datetime.now()
 
 daily_dir = f"{common.ROOT}/this_day"
-shutil.rmtree(daily_dir)
+try:
+    shutil.rmtree(daily_dir)
+except FileNotFoundError:
+    ...
 os.mkdir(daily_dir)
 
 
@@ -41,14 +44,15 @@ def write_year(year, conn, fout):
         lname = common.get_lname(timestamp, fname)
         lname_url = urllib.parse.quote_plus(lname)
         pic_url = f"{event_url}/{lname_url}"
-        img_path = f"/pgapi/gallery/content/{pic_url}/thumbnail/240"
+        # img_path = f"/pgapi/gallery/content/{pic_url}/thumbnail/240"
+        img_path = f"/pgapi/gallery/content/{pic_url}"
         link_url = f"/gallery/{event_url}?p={lname_url}"
-        img = f"[![{lname}]({img_path})])({link_url})"
+        img = f"[![{lname}]({img_path})]({link_url})"
         fout.write(f"{img}\n")
     fout.write("\n")
 
 
-with open(f"{daily_dir}/{now.timestamp()}.md", "w") as fout:
+with open(f"{daily_dir}/{int(now.timestamp())}.md", "w") as fout:
     with sqlite3.connect(common.PHOTO_DB) as conn:
         for year in range(now.year - 1, 2000, -1):
             write_year(year, conn, fout)
