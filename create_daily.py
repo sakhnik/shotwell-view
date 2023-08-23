@@ -21,7 +21,6 @@ os.mkdir(daily_dir)
 
 
 def write_year(year, conn, fout):
-    fout.write(f"# {year}\n\n")
     # Create a datetime object for the start and end of the day
     start_of_day = datetime.datetime(year, now.month, now.day, 0, 0, 0)
     end_of_day = datetime.datetime(year, now.month, now.day, 23, 59, 59)
@@ -31,15 +30,21 @@ def write_year(year, conn, fout):
 
     # Query photos for the target date
     query = """
-        SELECT f.filename, f.exposure_time, e.id, e.name FROM PhotoTable f
-        JOIN EventTable e ON f.event_id = e.id
-        WHERE f.exposure_time >= ? AND f.exposure_time <= ?
-        ORDER BY RANDOM()
-        LIMIT 3
+SELECT f.filename, f.exposure_time, e.id, e.name FROM
+(SELECT p.filename, p.exposure_time, p.event_id FROM PhotoTable p
+UNION
+SELECT v.filename, v.exposure_time, v.event_id FROM VideoTable v) AS f
+JOIN EventTable e ON f.event_id = e.id
+WHERE f.exposure_time >= ? AND f.exposure_time <= ?
+ORDER BY RANDOM()
+LIMIT 10
     """
     cursor = conn.cursor()
     cursor.execute(query, (start_timestamp, end_timestamp))
     photos = cursor.fetchall()
+    if not photos:
+        return
+    fout.write(f"# {year}\n\n")
     for fname, timestamp, eid, ename in photos:
         event_dir = events.get_name(eid)
         event_url = urllib.parse.quote(event_dir)

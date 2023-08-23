@@ -1,5 +1,4 @@
-- daily selection of videos
-- remove empty years from the daily selection
 - Add more verbiage: current date, event names
+- Title "years ago"
 - launch create_daily.py from create.py automatically
 - launch create_daily.py from a timer once a day
