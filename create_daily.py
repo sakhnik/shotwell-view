@@ -2,12 +2,14 @@
 
 import common
 import datetime
+from events import Events
 import os
 import shutil
 import sqlite3
 import urllib.parse
 
 
+events = Events()
 now = datetime.datetime.now()
 
 daily_dir = f"{common.ROOT}/this_day"
@@ -29,7 +31,7 @@ def write_year(year, conn, fout):
 
     # Query photos for the target date
     query = """
-        SELECT f.filename, f.exposure_time, e.id, e.name FROM PhotoTable f
+        SELECT f.filename, f.exposure_time, e.id FROM PhotoTable f
         JOIN EventTable e ON f.event_id = e.id
         WHERE f.exposure_time >= ? AND f.exposure_time <= ?
         ORDER BY RANDOM()
@@ -38,14 +40,13 @@ def write_year(year, conn, fout):
     cursor = conn.cursor()
     cursor.execute(query, (start_timestamp, end_timestamp))
     photos = cursor.fetchall()
-    for fname, timestamp, _, ename in photos:
-        event_dir = common.get_event_dir(timestamp, ename)
-        event_url = urllib.parse.quote_plus(event_dir)
+    for fname, timestamp, eid in photos:
+        event_dir = events.get_name(eid)
+        event_url = urllib.parse.quote(event_dir)
         lname = common.get_lname(timestamp, fname)
-        lname_url = urllib.parse.quote_plus(lname)
+        lname_url = urllib.parse.quote(lname)
         pic_url = f"{event_url}/{lname_url}"
-        # img_path = f"/pgapi/gallery/content/{pic_url}/thumbnail/240"
-        img_path = f"/pgapi/gallery/content/{pic_url}"
+        img_path = f"/pgapi/gallery/content/{pic_url}/thumbnail/240"
         link_url = f"/gallery/{event_url}?p={lname_url}"
         img = f"[![{lname}]({img_path})]({link_url})"
         fout.write(f"{img}\n")
