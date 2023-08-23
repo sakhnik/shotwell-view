@@ -8,8 +8,8 @@ will be suitable for browsing and viewing with PiGallery2
 (https://github.com/bpatrik/PiGallery2).
 """
 
+import common
 import sqlite3
-from datetime import datetime
 import pathlib
 import os
 import shutil
@@ -24,12 +24,9 @@ JOIN EventTable e ON f.event_id = e.id
 ORDER BY f.exposure_time;
 """
 
-PHOTO_DB = "/mnt/pictures/shotwell/data/photo.db"
-ROOT = "/home/sakhnik/Pictures2"
-
 # Remove the old view
-for f in os.listdir(ROOT):
-    fpath = pathlib.Path(ROOT, f)
+for f in os.listdir(common.ROOT):
+    fpath = pathlib.Path(common.ROOT, f)
     if os.path.islink(fpath):
         os.unlink(fpath)
     else:
@@ -37,21 +34,17 @@ for f in os.listdir(ROOT):
 
 events = {}  # eid -> path
 
-with sqlite3.connect(PHOTO_DB) as conn:
+with sqlite3.connect(common.PHOTO_DB) as conn:
     c = conn.cursor()
     for (fname, timestamp, eid, ename) in c.execute(QUERY):
         # print(fname, timestamp, eid, ename)
         dir_path = events.get(eid)
         if not dir_path:
-            dt = datetime.fromtimestamp(timestamp)
-            if ename:
-                dir_path = f"{ROOT}/{dt.year}/{dt.year}-{dt.month:02d}-{dt.day:02d} {ename}"
-            else:
-                dir_path = f"{ROOT}/{dt.year}/{dt.year}-{dt.month:02d}-{dt.day:02d}"
+            dir_path = f"{common.ROOT}/common.get_event_dir(timestamp, ename)"
             events[eid] = dir_path
             pathlib.Path(dir_path).mkdir(parents=True, exist_ok=True)
         try:
-            lname = f"{dir_path}/{timestamp}_{os.path.basename(fname)}"
+            lname = f"{dir_path}/{common.get_lname(timestamp, fname)}"
             os.symlink(fname, lname)
             # Mark the original timestamp from the database for correct
             # temporal ordering
@@ -61,6 +54,6 @@ with sqlite3.connect(PHOTO_DB) as conn:
             print(e)
 
 try:
-    os.symlink("/home/sakhnik/Pictures-incoming", f"{ROOT}/incoming")
+    os.symlink("/home/sakhnik/Pictures-incoming", f"{common.ROOT}/incoming")
 except Exception as e:
     print(e)
