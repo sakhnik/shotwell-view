@@ -6,6 +6,7 @@ from events import Events
 import os
 import shutil
 import sqlite3
+import typing
 import urllib.parse
 
 
@@ -20,7 +21,17 @@ except FileNotFoundError:
 os.mkdir(daily_dir)
 
 
-def write_year(year, conn, fout):
+def get_years_ago(n: int) -> str:
+    ones = n % 10
+    tens = n / 10 % 10
+    if ones == 1 and tens != 1:
+        return f"{n} рік тому"
+    if ones >= 2 and ones <= 4 and tens != 1:
+        return f"{n} роки тому"
+    return f"{n} років тому"
+
+
+def write_year(year: int, conn: sqlite3.Connection, fout: typing.TextIO):
     # Create a datetime object for the start and end of the day
     start_of_day = datetime.datetime(year, now.month, now.day, 0, 0, 0)
     end_of_day = datetime.datetime(year, now.month, now.day, 23, 59, 59)
@@ -48,7 +59,8 @@ ORDER BY id, exposure_time
     photos = cursor.fetchall()
     if not photos:
         return
-    fout.write(f"## {year}\n\n")
+    years_ago = get_years_ago(now.year - year)
+    fout.write(f"## {year} ({years_ago})\n\n")
     prev_eid = -1
     for fname, timestamp, eid, ename in photos:
         # Output event name when changes
