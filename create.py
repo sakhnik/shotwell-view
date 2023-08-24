@@ -14,6 +14,7 @@ import sqlite3
 import pathlib
 import os
 import shutil
+from daily import Daily
 
 
 QUERY = """
@@ -60,6 +61,9 @@ with sqlite3.connect(common.PHOTO_DB) as conn:
 
 # Dump the assigned event names to a database
 events.store()
+
+# Prepare "this day in past years"
+Daily().create()
 
 try:
     os.symlink("/home/sakhnik/Pictures-incoming", f"{common.ROOT}/incoming")
