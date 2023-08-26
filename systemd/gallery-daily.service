@@ -1,0 +1,8 @@
+[Unit]
+Description=Prepare "this day in past years" gallery
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python /home/sakhnik/work/shotwell-view/daily.py
+User=sakhnik
+Group=users
