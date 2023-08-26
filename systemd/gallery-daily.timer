@@ -1,0 +1,9 @@
+[Unit]
+Description=Generate "this day in past years" gallery daily
+
+[Timer]
+OnCalendar=*-*-* 4:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
