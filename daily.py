@@ -11,6 +11,7 @@ import urllib.parse
 
 
 daily_dir = f"{common.ROOT}/this_day"
+DAYS = ["понеділок", "вівторок", "середа", "четвер", "п’ятниця", "субота", "неділя"]
 
 
 class Daily:
@@ -59,7 +60,8 @@ ORDER BY id, exposure_time
         if not photos:
             return
         years_ago = self.get_years_ago(self.now.year - year)
-        fout.write(f"## {year} ({years_ago})\n\n")
+        day_name = DAYS[start_of_day.weekday()]
+        fout.write(f"## {year} ({day_name}, {years_ago})\n\n")
         prev_eid = -1
         for fname, timestamp, eid, ename in photos:
             # Output event name when changes
