@@ -29,10 +29,6 @@ class Daily:
             return f"{n} роки тому"
         return f"{n} років тому"
 
-    def get_weekday(self, d: datetime):
-
-        pass
-
     def write_year(self, year: int, conn: sqlite3.Connection,
                    fout: typing.TextIO):
         """Write photos and videos for a given year."""
